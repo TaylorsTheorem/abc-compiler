@@ -1,0 +1,92 @@
+@ <stdio.hdr>
+@ "lexer.hdr"
+
+// -- internal: only available within this translation unit
+
+global ch: int;
+global currentPos: Pos = {1, 0};
+global lengthVal: size_t;
+
+fn nextCh(updateVal: bool)
+{
+    if (updateVal) {
+        assert(lengthVal < sizeof(token.val) / sizeof(token.val[0]));
+        token.val[lengthVal++] = ch;
+        token.val[lengthVal] = 0;
+    } else {
+        lengthVal = 0;
+    }
+    ch = getchar();
+    if (ch == '\n') {
+        ++currentPos.row;
+        currentPos.col = 0;
+    } else {
+        ++currentPos.col;
+    }
+}
+
+fn isDigit(ch: int): bool
+{
+    return ch >= '0' && ch <= '9';
+}
+
+fn isLetter(ch: int): bool
+{
+    return ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'A';
+}
+
+// -- exported: available for other translation units
+
+global token: Token;
+
+fn getToken(): TokenKind
+{
+    lengthVal = 0;
+    while (ch == 0 || ch == ' ' || ch == '\n' || ch == '\t') {
+        nextCh(false);
+    }
+    token.pos = currentPos;
+    if (isDigit(ch)) {
+        while (isDigit(ch)) {
+            nextCh(true);
+        }
+        return token.kind = DECIMAL_LITERAL;
+    } else if (isLetter(ch)) {
+        while (isLetter(ch) || isDigit(ch)) {
+            nextCh(true);
+        }
+        return token.kind = IDENTIFIER;
+    } else if (ch == '+') {
+        nextCh(true);
+        return token.kind = PLUS;
+    } else if (ch == '*') {
+        nextCh(true);
+        return token.kind = ASTERISK;
+    } else if (ch == '(') {
+        nextCh(true);
+        return token.kind = LPAREN;
+    } else if (ch == ')') {
+        nextCh(true);
+        return token.kind = RPAREN;
+    } else if (ch == EOF) {
+        return token.kind = EOI;
+    } else {
+        nextCh(true);
+        return token.kind = BAD_TOKEN;
+    }
+}
+
+fn tokenKindStr(token: TokenKind): -> char
+{
+    switch (token) {
+        case BAD_TOKEN: return "BAD_TOKEN";
+        case EOI: return "EOI";
+        case DECIMAL_LITERAL: return "DECIMAL_LITERAL";
+        case IDENTIFIER: return "IDENTIFIER";
+        case PLUS: return "PLUS";
+        case ASTERISK: return "ASTERISK";
+        case LPAREN: return "LPAREN";
+        case RPAREN: return "RPAREN";
+        default: return "??";
+    }
+}

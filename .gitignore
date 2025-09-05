@@ -1,0 +1,10 @@
+# Ignore executables
+*.out
+
+# Ignore object files
+*.o
+
+# Ignore TeX files for displaying expression trees 
+tree.*
+tree_header.tex
+tree_footer.tex

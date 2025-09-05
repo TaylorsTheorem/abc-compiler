@@ -1,0 +1,24 @@
+enum ExprKind {
+    // Binary node
+    EXPR_ADD,
+    EXPR_MULT,
+
+    // Primary Node
+    EXPR_INTEGER,
+};
+
+struct Expr {
+    kind: ExprKind;
+    left, right: ->Expr; // Binary
+    decimal: u64; // Primary
+};
+
+// contructors
+extern fn createBinaryExpr(kind: ExprKind, left: ->Expr, right: ->Expr): ->Expr;
+extern fn createIntegerExpr(val: u64): ->Expr;
+
+// destructor
+extern fn releaseExpr(expr: ->Expr);
+
+// methods
+extern fn printExprTree(expr: ->Expr);

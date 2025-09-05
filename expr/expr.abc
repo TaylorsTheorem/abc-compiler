@@ -1,0 +1,41 @@
+@ <stdio.hdr>
+@ <stdlib.hdr>
+@ "temp/expr.hdr"
+
+fn createBinaryExpr(kind: ExprKind, left: ->Expr, right: ->Expr): ->Expr {
+    local n: ->Expr = malloc(sizeof(*n));
+    assert(n);
+    n->kind = kind;
+    n->left = left;
+    n->right = right;
+
+    return n;
+}
+
+fn createIntegerExpr(val: u64): ->Expr {
+    local n: ->Expr = malloc(sizeof(*n));
+    assert(n);
+    n->kind = EXPR_INTEGER;
+    n->decimal = val;
+    return n;
+}
+
+fn releaseExpr(expr: ->Expr) {
+    // TODO
+}
+
+fn printExprTree(expr: -> Expr) {
+    if (expr->kind == EXPR_INTEGER) {
+        printf(" [ %llu ]", expr->decimal);
+    } else if (expr->kind >= EXPR_ADD && expr->kind <= EXPR_MULT) {
+        printf(" [ ");
+        switch (expr->kind) {
+            case EXPR_ADD: printf("+"); break;
+            case EXPR_MULT: printf("*"); break;
+            default: assert(0);
+        }
+        printExprTree(expr->left);
+        printExprTree(expr->right);
+        printf("]");
+    }
+}

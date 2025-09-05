@@ -1,0 +1,88 @@
+@ <stdio.hdr>
+@ <stdlib.hdr>
+@ "lexer/lexer.hdr"
+
+fn syntaxError() {
+    printf("syntax error\n");
+    exit(1);
+}
+
+fn getReg(): int {
+    static reg: int = 1;
+    return reg++;
+}
+
+fn parseTerm(): int;
+
+// term { "+" term }
+fn parseExpr(): int {
+    local left: int = parseTerm(); // reg id of left value for ass code
+    if (left < 0) {
+        return -1; // No term means no expression
+    }
+    // Term found
+    while (token.kind == PLUS) {
+        getToken(); // Consume Token
+        local right: int = parseTerm();
+        if (right < 0) { // There must be a term after plus (EBNF)
+            syntaxError();
+        }
+        local dest: int = getReg();
+        printf("\tadd %%%d, %%%d, %%%d\n", left, right, dest);
+        left = dest; // save res in %dest and set left to dest for more adders
+    }
+    return left; // could be dest, but then must be add, this was allow "1"
+}
+
+// factor { "*" factor }
+fn parseTerm(): int {
+    local left: int = parseFactor(); // reg id of left value for ass code
+    if (left < 0) {
+        return -1; // No term means no expression
+    }
+    // Term found
+    while (token.kind == ASTERISK) {
+        getToken(); // Consume Token
+        local right: int = parseFactor();
+        if (right < 0) { // There must be a term after plus (EBNF)
+            syntaxError();
+        }
+        local dest: int = getReg();
+        printf("\tmul %%%d, %%%d, %%%d\n", left, right, dest);
+        left = dest; // save res in %dest and set left to dest for more adders
+    }
+    return left; // could be dest, but then must be add, this was allow "1"
+}
+
+// decimal_literal | "(" expr ")"
+fn parseFactor(): int {
+    if (token.kind = DECIMAL_LITERAL) {
+        local reg: int = getReg();
+        printf("\tload %s, %%%d\n", token.val, reg);
+        getToken();
+        return reg;
+    } else if (token.kind == LPAREN) {
+        getToken();
+        local reg: int = parseExpr();
+        if (reg < 0) {
+            syntaxError();
+        }
+        if (token.kind != RPAREN) {
+            syntaxError();
+        }
+        getToken();
+        return reg;
+    } else {
+        return -1;
+    }
+}
+
+fn main() {
+    getToken(); // Initialize global var token
+    local reg: int = parseExpr();
+    if (reg >= 0 && token.kind == EOI) {
+        printf("\thalt %%%d\n", reg);
+    } else {
+        syntaxError();
+    }
+}
