@@ -1,5 +1,5 @@
 CC := abc
-CFLAGS += -O3 -Ilexer -Iexpr
+CFLAGS += -O3 -Ilexer -Iexpr -Iparser -Igen
 DEPFLAGS += -MD -MF $(dep.dir)/$(<F).d \
              -MT $(@:$(cpp.dir)/%.abc_cpp=$(obj.dir)/%.o) -MP
 
