@@ -9,69 +9,64 @@ fn syntaxError() {
     exit(1);
 }
 
-fn parseTerm(): int;
+fn parseTerm(): -> Expr;
 
-fn parseFactor(): int;
+fn parseFactor(): -> Expr;
 
 // term { "+" term }
-fn parseExpr(): int {
-    local left: int = parseTerm(); // reg id of left value for ass code
-    if (left < 0) {
-        return -1; // No term means no expression
+fn parseExpr(): -> Expr {
+    local left: -> Expr = parseTerm(); // reg id of left value for ass code
+    if (!left) {
+        return nullptr; // No term means no expression
     }
     // Term found
     while (token.kind == PLUS) {
         getToken(); // Consume Token
-        local right: int = parseTerm();
-        if (right < 0) { // There must be a term after plus (EBNF)
+        local right: -> Expr = parseTerm();
+        if (!right) { // There must be a term after plus (EBNF)
             syntaxError();
         }
-        local dest: int = getReg();
-        printf("\tadd %%%d, %%%d, %%%d\n", left, right, dest);
-        left = dest; // save res in %dest and set left to dest for more adders
+        left = createBinaryExpr(EXPR_ADD, left, right);
     }
     return left; // could be dest, but then must be add, this was allow "1"
 }
 
 // factor { "*" factor }
-fn parseTerm(): int {
-    local left: int = parseFactor(); // reg id of left value for ass code
-    if (left < 0) {
-        return -1; // No term means no expression
+fn parseTerm(): -> Expr {
+    local left: -> Expr = parseFactor(); // reg id of left value for ass code
+    if (!left) {
+        return nullptr; // No term means no expression
     }
     // Term found
     while (token.kind == ASTERISK) {
         getToken(); // Consume Token
-        local right: int = parseFactor();
-        if (right < 0) { // There must be a term after plus (EBNF)
+        local right: -> Expr = parseFactor();
+        if (!right) { // There must be a term after plus (EBNF)
             syntaxError();
         }
-        local dest: int = getReg();
-        printf("\tmul %%%d, %%%d, %%%d\n", left, right, dest);
-        left = dest; // save res in %dest and set left to dest for more adders
+        left = createBinaryExpr(EXPR_MULT, left, right);
     }
     return left; // could be dest, but then must be add, this was allow "1"
 }
 
 // decimal_literal | "(" expr ")"
-fn parseFactor(): int {
+fn parseFactor(): -> Expr {
     if (token.kind == DECIMAL_LITERAL) {
-        local reg: int = getReg();
-        printf("\tload %s, %%%d\n", token.val, reg);
+        local expr: -> Expr = createIntegerExpr(token.val);
         getToken();
-        return reg;
+        return expr;
     } else if (token.kind == LPAREN) {
         getToken();
-        local reg: int = parseExpr();
-        if (reg < 0) {
+        local expr: -> Expr = parseExpr();
+        if (!expr) {
             syntaxError();
         }
         if (token.kind != RPAREN) {
             syntaxError();
         }
         getToken();
-        return reg;
+        return expr;
     } else {
-        return -1;
+        return nullptr;
     }
 }

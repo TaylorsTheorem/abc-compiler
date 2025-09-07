@@ -1,2 +1,4 @@
-extern fn parseExpr(): int;
-extern fn syntaxError();
+@ "expr/expr.hdr"
+
+extern fn parseExpr(): -> Expr;
+// extern fn syntaxError();

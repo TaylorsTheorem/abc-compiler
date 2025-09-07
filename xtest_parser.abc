@@ -5,10 +5,10 @@
 
 fn main() {
     getToken(); // Initialize global var token
-    local reg: int = parseExpr();
-    if (reg >= 0 && token.kind == EOI) {
-        printf("\thalt %%%d\n", reg);
+    local expr: ->Expr = parseExpr();
+    if (expr && token.kind == EOI) {
+        printExprTree(expr);
     } else {
-        syntaxError();
+        printf("syntax error\n");
     }
 }
