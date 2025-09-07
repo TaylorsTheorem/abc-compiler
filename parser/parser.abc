@@ -55,7 +55,7 @@ fn parseTerm(): int {
 
 // decimal_literal | "(" expr ")"
 fn parseFactor(): int {
-    if (token.kind = DECIMAL_LITERAL) {
+    if (token.kind == DECIMAL_LITERAL) {
         local reg: int = getReg();
         printf("\tload %s, %%%d\n", token.val, reg);
         getToken();
