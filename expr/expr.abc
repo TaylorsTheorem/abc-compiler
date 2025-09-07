@@ -1,6 +1,6 @@
 @ <stdio.hdr>
 @ <stdlib.hdr>
-@ "temp/expr.hdr"
+@ "expr/expr.hdr"
 
 fn createBinaryExpr(kind: ExprKind, left: ->Expr, right: ->Expr): ->Expr {
     local n: ->Expr = malloc(sizeof(*n));

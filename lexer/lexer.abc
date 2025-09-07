@@ -1,5 +1,5 @@
 @ <stdio.hdr>
-@ "lexer.hdr"
+@ "lexer/lexer.hdr"
 
 // -- internal: only available within this translation unit
 
