@@ -13,20 +13,25 @@ fn parseTerm(): -> Expr;
 
 fn parseFactor(): -> Expr;
 
-// term { "+" term }
+// term { ( "+" | "-") term }
 fn parseExpr(): -> Expr {
     local left: -> Expr = parseTerm(); // reg id of left value for ass code
     if (!left) {
         return nullptr; // No term means no expression
     }
     // Term found
-    while (token.kind == PLUS) {
+    while (token.kind == PLUS || token.kind == MINUS) {
+        local tok: Token = token;
         getToken(); // Consume Token
         local right: -> Expr = parseTerm();
         if (!right) { // There must be a term after plus (EBNF)
             syntaxError();
         }
-        left = createBinaryExpr(EXPR_ADD, left, right);
+        if (tok.kind == PLUS) {
+            left = createBinaryExpr(EXPR_ADD, left, right);
+        } else {
+            left = createBinaryExpr(EXPR_SUB, left, right);
+        }
     }
     return left; // could be dest, but then must be add, this was allow "1"
 }
@@ -38,13 +43,18 @@ fn parseTerm(): -> Expr {
         return nullptr; // No term means no expression
     }
     // Term found
-    while (token.kind == ASTERISK) {
+    while (token.kind == ASTERISK || token.kind == SLASH) {
+        local tok: Token = token;
         getToken(); // Consume Token
         local right: -> Expr = parseFactor();
         if (!right) { // There must be a term after plus (EBNF)
             syntaxError();
         }
-        left = createBinaryExpr(EXPR_MULT, left, right);
+        if (tok.kind == ASTERISK) {
+            left = createBinaryExpr(EXPR_MUL, left, right);
+        } else {
+            left = createBinaryExpr(EXPR_DIV, left, right);
+        }
     }
     return left; // could be dest, but then must be add, this was allow "1"
 }

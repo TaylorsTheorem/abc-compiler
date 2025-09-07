@@ -7,7 +7,9 @@ enum TokenKind
     DECIMAL_LITERAL,
     IDENTIFIER,
     PLUS,
+    MINUS,
     ASTERISK,
+    SLASH,
     LPAREN,
     RPAREN,
 };

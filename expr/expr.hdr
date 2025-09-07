@@ -1,12 +1,16 @@
 @ "common/string.hdr"
 
 enum ExprKind {
-    // Binary node
-    EXPR_ADD,
-    EXPR_MULT,
+    EXPR_BINARY,
+    EXPR_ADD = EXPR_BINARY,
+    EXPR_SUB,
+    EXPR_MUL,
+    EXPR_DIV,
+    EXPR_BINARY_END,
 
-    // Primary Node
-    EXPR_INTEGER,
+    EXPR_PRIMARY = EXPR_BINARY_END,
+    EXPR_INTEGER = EXPR_PRIMARY,
+    EXPR_PRIMARY_END,
 };
 
 struct Expr {
