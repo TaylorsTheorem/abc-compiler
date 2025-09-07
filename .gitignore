@@ -1,5 +1,8 @@
 # Ignore executables
 *.out
+xtest_expr
+xtest_lexer
+xtest_parser
 
 # Ignore object files
 *.o
@@ -7,9 +10,6 @@
 # Ignore makefile generated folders
 dep/
 obj/
-xtest_expr/
-xtest_lexer/
-xtest_parser/
 
 # Ignore TeX files for displaying expression trees 
 tree.*
